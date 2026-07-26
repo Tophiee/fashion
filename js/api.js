@@ -6,7 +6,7 @@
 const API = {
     getScriptUrl() {
         return window.Config && window.Config.SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyqgj9MJuEvSCZLF9L0DSVtcqeKvtdr5LoXoI16jouE1ulbapitZuPuxbFEluBDP9LO/exec' 
-            ? window.Config.SCRIPT_URL 
+            ? window.Config.SCRIPT_URL : window.Config.SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyqgj9MJuEvSCZLF9L0DSVtcqeKvtdr5LoXoI16jouE1ulbapitZuPuxbFEluBDP9LO/exec' ? 'https://script.google.com/macros/s/AKfycbyqgj9MJuEvSCZLF9L0DSVtcqeKvtdr5LoXoI16jouE1ulbapitZuPuxbFEluBDP9LO/exec'
             : null;
     },
 
