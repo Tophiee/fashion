@@ -1,0 +1,114 @@
+/* Global Reset & Base (Tailwind Preflight handles most, but we keep accessibility specific overrides) */
+
+/* Skip Link for Keyboard Accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #4338CA;
+    color: white;
+    padding: 8px;
+    z-index: 10000;
+    transition: top 0.2s;
+}
+.skip-link:focus {
+    top: 0;
+}
+
+/* Base Accessibility / Focus */
+.focus-ring:focus-visible,
+.focus-ring-wrapper:focus-within {
+    outline: 2px solid #4338CA;
+    outline-offset: 2px;
+}
+
+/* Ensure disabled buttons look disabled but still prevent multiple clicks */
+button:disabled, button[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Custom Error State for Forms (toggled via JS) */
+.error-state {
+    border-color: #DC2626 !important;
+    background-color: #FEF2F2 !important;
+}
+
+/* Animations */
+.slide-in {
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* AI Scanner Animation */
+.ai-scanner {
+    position: relative;
+    overflow: hidden;
+}
+
+.scanner-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: #059669;
+    box-shadow: 0 0 15px #059669;
+    animation: scan 2s infinite linear;
+}
+
+@keyframes scan {
+    0% { top: -10px; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* Custom Spinner */
+.spinner {
+    border: 4px solid #E5E7EB;
+    border-top-color: #4338CA;
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Toast Animation */
+.toast {
+    animation: slideInUp 0.3s ease-out forwards;
+}
+
+@keyframes slideInUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Custom radio styles to override browser defaults if needed, though Tailwind form plugin does this better.
+   We will rely on Tailwind for radios/checkboxes, but ensure label clicking is flawless. */
+input[type="radio"]:focus, input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #4338CA;
+}

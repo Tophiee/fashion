@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design and Evaluation of an AI-Assisted Sustainable Wardrobe Recommendation System (EMS12334)</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS with Forms Plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { light: '#EEF2FF', DEFAULT: '#4338CA', hover: '#3730A3' },
+                        secondary: { light: '#ECFDF5', DEFAULT: '#059669', hover: '#047857' },
+                        error: '#DC2626',
+                        success: { light: '#D1FAE5', DEFAULT: '#059669' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS for keyframes and accessibility outlines -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col antialiased">
+    
+    <!-- Skip to main content for accessibility -->
+    <a href="#app-root" class="skip-link">Skip to main content</a>
+
+    <!-- Top Navigation / Progress Header -->
+    <header id="app-header" class="app-header hidden bg-white shadow-sm sticky top-0 z-50 p-4 border-b border-gray-200" aria-hidden="true">
+        <div class="max-w-2xl mx-auto w-full flex flex-col items-center">
+            <div class="w-full bg-gray-200 h-2 rounded-full mb-2 overflow-hidden">
+                <div id="progress-bar" class="h-full bg-primary transition-all duration-500 ease-out" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+            </div>
+            <div class="text-sm font-semibold text-gray-500">Step <span id="progress-step-current">1</span> of <span id="progress-step-total">8</span></div>
+        </div>
+    </header>
+
+    <!-- Main SPA Container -->
+    <main id="app-root" role="main" class="flex-grow flex flex-col items-center p-4 md:p-8 w-full"></main>
+
+    <!-- Global Toast Notifications -->
+    <div id="toast-container" aria-live="polite" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+
+    <!-- Global Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center z-50" aria-hidden="true">
+        <div class="spinner w-16 h-16 mb-4"></div>
+        <h2 id="loading-text" class="text-2xl font-bold text-gray-800">Processing...</h2>
+    </div>
+
+    <!-- ==========================================
+         SPA VIEW TEMPLATES (Tailwind Refactored)
+         ========================================== -->
+
+    <!-- Landing Page -->
+    <template id="view-landing">
+        <section class="w-full max-w-2xl mx-auto fade-in" aria-labelledby="landing-title">
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 text-center border border-gray-100">
+                <h1 id="landing-title" class="text-2xl md:text-3xl font-bold text-primary mb-6 leading-tight">Design and Evaluation of an AI-Assisted Sustainable Wardrobe Recommendation System (EMS12334)</h1>
+                <p class="text-lg text-gray-600 mb-6">Welcome to the Research Study. This study forms part of an MSc dissertation at Abertay University.</p>
+                
+                <div class="bg-primary-light rounded-xl p-6 text-left mb-8 border-l-4 border-primary shadow-sm">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Study Overview</h2>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span><strong class="text-gray-900">Purpose:</strong> To evaluate and compare traditional and AI-assisted wardrobe creation workflows.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <span><strong class="text-gray-900">Privacy:</strong> Participation is completely anonymous. No personally identifiable information will be collected.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span><strong class="text-gray-900">Rights:</strong> Participation is completely voluntary. You may withdraw at any time.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span><strong class="text-gray-900">Duration:</strong> <span id="landing-time" class="font-semibold">10–15</span> minutes.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button id="btn-begin-study" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-light">Begin Study</button>
+            </div>
+        </section>
+    </template>
+
+    <!-- Information Sheet -->
+    <template id="view-info-sheet">
+        <section class="w-full max-w-2xl mx-auto slide-in" aria-labelledby="info-title">
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-gray-100 max-h-[85vh] overflow-y-auto">
+                <h1 id="info-title" class="text-2xl font-bold text-gray-900 mb-2">Participant Information Sheet</h1>
+                <h2 class="text-lg font-semibold text-primary mb-6 pb-4 border-b border-gray-200" id="info-study-title">Design and Evaluation of an AI-Assisted Sustainable Wardrobe Recommendation System (EMS12334)</h2>
+                
+                <div class="space-y-6 text-gray-700">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Purpose of the Study</h3>
+                        <p class="leading-relaxed">The purpose of this research is to evaluate and compare the user experience of a traditional manual wardrobe creation workflow against an AI-assisted wardrobe creation workflow. We aim to understand which method is more usable, efficient, and preferred by users.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Why have I been invited?</h3>
+                        <p class="leading-relaxed">You have been invited because you are 18 years of age or older. We are seeking general users to understand how different demographics interact with wardrobe applications.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What will I be asked to do?</h3>
+                        <p class="leading-relaxed">You will complete two brief digital wardrobe activities (one traditional, one AI-assisted), complete a short demographic questionnaire, and provide your evaluation of both workflows through a post-study questionnaire.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Voluntary Participation</h3>
+                        <p class="leading-relaxed">Participation is completely voluntary. You have the right to withdraw from the study at any time without providing a reason by simply closing your browser tab.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Confidentiality & Data Handling</h3>
+                        <p class="leading-relaxed">All data collected is strictly anonymous. No personally identifiable information (PII) such as your name, email, or IP address will be recorded. Data will be stored securely on cloud servers accessible only to the research team and will be retained securely in accordance with university data protection policies.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Risks and Benefits</h3>
+                        <p class="leading-relaxed">There are no anticipated physical or psychological risks associated with participating in this study. While there are no direct benefits to you, your participation will contribute to academic research in Human-Computer Interaction and AI design.</p>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Data Controller & Contact</h3>
+                        <p class="mb-1"><strong class="text-gray-900">Researcher:</strong> <span id="info-researcher-name">Oluwatofunmi Oluwole</span> (<span id="info-researcher-email">2506006@abertay.ac.uk</span>)</p>
+                        <p><strong class="text-gray-900">Supervisors:</strong> <span id="info-supervisor-name">Professor Vera Kempe & Professor Stefano De Paoli</span></p>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <button id="btn-continue-consent" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">I have read and understood the information</button>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!-- Consent Form -->
+    <template id="view-consent">
+        <section class="w-full max-w-2xl mx-auto slide-in" aria-labelledby="consent-title">
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-gray-100">
+                <h1 id="consent-title" class="text-2xl font-bold text-gray-900 mb-2">Consent Form</h1>
+                <p class="text-gray-600 mb-6 pb-4 border-b border-gray-200">Please check all boxes below to indicate your consent to participate in this study.</p>
+                
+                <form id="consent-form" class="space-y-4 mb-8">
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I have read and understood the contents of the participant information sheet and consent form.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I understand the purpose of this study and what my participation involves.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I understand that my participation is entirely voluntary and that I can withdraw from the research (parts of the project or the entire project) at any time without penalty and without having to provide an explanation.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I understand who has access to my data and how it will be handled at all stages of the research project.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I understand that my responses will be anonymous and handled confidentially for research purposes.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I understand that if I have any questions about the study, I can contact the researcher using the details provided in the Participant Information Sheet.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I confirm that I am 18 years of age or older.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I understand that anonymised or pseudonymised findings from this research may be used in the researcher's MSc dissertation and related academic publications or presentations.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-primary">
+                        <input type="checkbox" class="mt-1 w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary" required>
+                        <span class="text-gray-700 leading-relaxed">I consent to take part in this study conducted by Oluwatofunmi Oluwole, who intends to use my data for further research examining AI-assisted wardrobe recommendation systems and wardrobe management technologies.</span>
+                    </label>
+                </form>
+
+                <div class="flex flex-col md:flex-row gap-4">
+                    <button class="w-full md:w-1/3 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 font-bold py-3 px-6 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-gray-200" onclick="window.App.exitStudy()">Exit Study</button>
+                    <button id="btn-agree-consent" class="w-full md:w-2/3 bg-primary hover:bg-primary-hover disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light" disabled aria-disabled="true">Continue</button>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!-- Demographics -->
+    <template id="view-demographics">
+        <section class="w-full max-w-2xl mx-auto slide-in" aria-labelledby="demo-title">
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-gray-100 max-h-[85vh] overflow-y-auto">
+                <h1 id="demo-title" class="text-2xl font-bold text-gray-900 mb-2">Demographic Questionnaire</h1>
+                <p class="text-gray-600 mb-8 pb-4 border-b border-gray-200">Please provide some general background information. This helps us understand our participant pool.</p>
+                
+                <form id="demographics-form" class="space-y-8" novalidate>
+                    
+                    <div class="space-y-2">
+                        <label for="demo-age" class="block font-semibold text-gray-900">Age Group <span class="text-error" aria-hidden="true">*</span></label>
+                        <select id="demo-age" name="age" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-gray-50" aria-required="true">
+                            <option value="">Select an option</option>
+                            <option value="18-24">18–24</option>
+                            <option value="25-34">25–34</option>
+                            <option value="35-44">35–44</option>
+                            <option value="45-54">45–54</option>
+                            <option value="55+">55+</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="demo-gender" class="block font-semibold text-gray-900">Gender (Optional)</label>
+                        <select id="demo-gender" name="gender" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-gray-50">
+                            <option value="">Select an option</option>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Non-binary">Non-binary</option>
+                            <option value="Self-describe">Prefer to self-describe</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+
+                    <fieldset class="space-y-3 p-4 rounded-xl border border-gray-200 bg-white">
+                        <legend class="font-semibold text-gray-900 px-1">Previous wardrobe/fashion app experience <span class="text-error" aria-hidden="true">*</span></legend>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                <input type="radio" name="wardrobeExperience" value="Yes" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-gray-800">Yes</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                <input type="radio" name="wardrobeExperience" value="No" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-gray-800">No</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="space-y-3 p-4 rounded-xl border border-gray-200 bg-white">
+                        <legend class="font-semibold text-gray-900 px-1">Previous AI application experience <span class="text-error" aria-hidden="true">*</span></legend>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                <input type="radio" name="aiExperience" value="Yes" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-gray-800">Yes</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                <input type="radio" name="aiExperience" value="No" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-gray-800">No</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="space-y-3 p-4 rounded-xl border border-gray-200 bg-white">
+                        <legend class="font-semibold text-gray-900 px-1">Confidence using mobile applications <span class="text-error" aria-hidden="true">*</span></legend>
+                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                            <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                <input type="radio" name="mobileConfidence" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-sm font-medium text-gray-700">1 (Low)</span>
+                            </label>
+                            <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                <input type="radio" name="mobileConfidence" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-sm font-medium text-gray-700">2</span>
+                            </label>
+                            <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                <input type="radio" name="mobileConfidence" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-sm font-medium text-gray-700">3</span>
+                            </label>
+                            <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                <input type="radio" name="mobileConfidence" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-sm font-medium text-gray-700">4</span>
+                            </label>
+                            <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                <input type="radio" name="mobileConfidence" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                <span class="text-sm font-medium text-gray-700">5 (High)</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <button id="btn-submit-demographics" type="submit" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">Submit & Continue</button>
+                </form>
+            </div>
+        </section>
+    </template>
+
+    <!-- Study Instructions -->
+    <template id="view-study-instructions">
+        <section class="w-full max-w-2xl mx-auto slide-in" aria-labelledby="instructions-title">
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 text-center border border-gray-100">
+                <h1 id="instructions-title" class="text-2xl font-bold text-gray-900 mb-6">Overall Study Instructions</h1>
+                
+                <div class="bg-primary-light rounded-xl p-6 text-left mb-8 border-l-4 border-primary shadow-sm">
+                    <ul class="space-y-4 text-gray-800 text-lg">
+                        <li class="flex items-start gap-3">
+                            <span class="text-primary font-bold mt-1">•</span>
+                            <span>You will now complete <strong>two wardrobe activities</strong>.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-primary font-bold mt-1">•</span>
+                            <span>One uses a <strong>traditional</strong> (manual) workflow, and the other uses an <strong>AI-assisted</strong> workflow.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-primary font-bold mt-1">•</span>
+                            <span>The order of these activities is assigned automatically.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-primary font-bold mt-1">•</span>
+                            <span>Please complete the tasks <strong>naturally</strong> at your normal pace. There are no right or wrong answers.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-primary font-bold mt-1">•</span>
+                            <span>After completing both activities, you will be asked to evaluate them.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button id="btn-begin-workflows" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-light">I'm ready, let's start</button>
+            </div>
+        </section>
+    </template>
+
+    <!-- Random Assignment (Loading Screen) -->
+    <template id="view-random-assignment">
+        <section class="w-full max-w-2xl mx-auto fade-in flex items-center justify-center min-h-[50vh]">
+            <div class="text-center" aria-live="polite">
+                <div class="spinner w-16 h-16 mx-auto mb-6"></div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Preparing study environment...</h2>
+                <p class="text-gray-500">Assigning workflow order dynamically</p>
+            </div>
+        </section>
+    </template>
+
+        <!-- Traditional Workflow -->
+    <template id="view-traditional-workflow">
+        <section class="w-full mx-auto slide-in" aria-labelledby="tw-title">
+            <div class="flex items-center justify-between mb-6 max-w-2xl mx-auto px-4">
+                <div>
+                    <span class="inline-block bg-primary-light text-primary text-sm font-bold px-3 py-1 rounded-full mb-2">Activity <span id="tw-order-num">1</span> of 2</span>
+                    <h1 id="tw-title" class="text-2xl font-bold text-gray-900">Traditional Workflow</h1>
+                </div>
+            </div>
+            
+            <div class="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-6">
+                <!-- Replace src with actual Figma URL -->
+                <iframe
+                    id="tw-figma-frame"
+                    src="https://www.figma.com/embed?embed_host=wardrobe-study&client_id=IchHl4bHYpsxWIUVLQfqiD&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FISJjpOPd5lD33mFQKGsUQH%2FTraditional-Digital-Wardrobe-Management%3Fnode-id%3D2-407%26t%3DovmWkeVwjxpLVWMu-1"
+                    width="100%"
+                    height="800"
+                    style="border:none;"
+                    title="Traditional Workflow Prototype">
+                </iframe>
+            </div>
+
+            <div class="max-w-2xl mx-auto px-4">
+                <button id="btn-tw-complete" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">I have completed this task</button>
+            </div>
+        </section>
+    </template>
+
+    <!-- AI Workflow -->
+    <template id="view-ai-workflow">
+        <section class="w-full mx-auto slide-in" aria-labelledby="aw-title">
+            <div class="flex items-center justify-between mb-6 max-w-2xl mx-auto px-4">
+                <div>
+                    <span class="inline-block bg-primary-light text-primary text-sm font-bold px-3 py-1 rounded-full mb-2">Activity <span id="aw-order-num">2</span> of 2</span>
+                    <h1 id="aw-title" class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        AI Workflow <span class="bg-secondary-light text-secondary text-xs font-bold px-2 py-1 rounded">AI Assisted</span>
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-6">
+                <!-- Replace src with actual Figma URL for AI workflow -->
+                <iframe
+                    id="aw-figma-frame"
+                    src="https://www.figma.com/embed?embed_host=wardrobe-study&client_id=IchHl4bHYpsxWIUVLQfqiD&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FISJjpOPd5lD33mFQKGsUQH%2FTraditional-Digital-Wardrobe-Management%3Fnode-id%3D56-2%26t%3DovmWkeVwjxpLVWMu-1"
+                    width="100%"
+                    height="800"
+                    style="border:none;"
+                    title="AI-Assisted Workflow Prototype">
+                </iframe>
+            </div>
+
+            <div class="max-w-2xl mx-auto px-4">
+                <button id="btn-aw-complete" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">I have completed this task</button>
+            </div>
+        </section>
+    </template>
+
+    <!-- Transition Between Workflows -->
+    <template id="view-transition">
+        <section class="w-full max-w-2xl mx-auto slide-in text-center flex items-center justify-center min-h-[60vh]">
+            <div class="bg-white rounded-2xl shadow-xl p-10 border border-gray-100 w-full">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary-light text-primary mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Activity 1 Complete</h1>
+                <p class="text-lg text-gray-600 mb-10">Thank you. You will now proceed to the second activity.</p>
+                <button id="btn-start-next-workflow" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-light">Start Activity 2</button>
+            </div>
+        </section>
+    </template>
+
+    <!-- Post-Study Evaluation Questionnaire -->
+    <template id="view-post-study">
+        <section class="w-full max-w-2xl mx-auto slide-in" aria-labelledby="eval-title">
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-gray-100 max-h-[85vh] overflow-y-auto">
+                <h1 id="eval-title" class="text-2xl font-bold text-gray-900 mb-2">Evaluation</h1>
+                <p class="text-gray-600 mb-8 pb-4 border-b border-gray-200">Please evaluate both workflows you just experienced.</p>
+                
+                <div id="post-study-error" class="text-error font-semibold mb-6 p-4 bg-red-50 rounded-lg hidden" aria-live="assertive"></div>
+
+                <form id="post-study-form" class="space-y-10" novalidate>
+                    
+                    <!-- Traditional Prototype Ratings -->
+                    <div class="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-200 space-y-8">
+                        <h2 class="text-xl font-bold text-gray-900 border-b border-gray-200 pb-3">Traditional Workflow Evaluation</h2>
+                        
+                        <!-- Helper block to make the likert code reusable -->
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Overall rating <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-traditional" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-traditional" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-traditional" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-traditional" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Ease of use <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-traditional" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-traditional" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-traditional" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-traditional" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Usefulness <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-traditional" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-traditional" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-traditional" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-traditional" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Confidence completing tasks <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-traditional" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-traditional" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-traditional" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-traditional" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Prototype Ratings -->
+                    <div class="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-200 space-y-8">
+                        <h2 class="text-xl font-bold text-gray-900 border-b border-gray-200 pb-3">AI-Assisted Workflow Evaluation</h2>
+                        
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Overall rating <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-ai" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-ai" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-ai" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-rating-ai" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Ease of use <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-ai" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-ai" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-ai" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-ease-ai" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Usefulness <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-ai" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-ai" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-ai" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-useful-ai" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Confidence completing tasks <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">1 (Very Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-ai" value="2" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">2 (Poor)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-ai" value="3" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">3 (Fair)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-ai" value="4" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">4 (Good)</span>
+                                </label>
+                                <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
+                                    <input type="radio" name="eval-conf-ai" value="5" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="text-sm font-medium text-gray-700">5 (Excellent)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparative Questions -->
+                    <div class="space-y-8 pt-4 border-t border-gray-200">
+                        <h2 class="text-xl font-bold text-gray-900">Overall Comparison</h2>
+
+                        <fieldset class="space-y-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                            <legend class="font-semibold text-gray-900 px-1">Which prototype did you prefer? <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="flex flex-col gap-3">
+                                <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                    <input type="radio" name="eval-preference" value="Traditional" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="font-medium text-gray-800">Traditional Workflow</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                    <input type="radio" name="eval-preference" value="AI" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="font-medium text-gray-800">AI-Assisted Workflow</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="space-y-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                            <legend class="font-semibold text-gray-900 px-1">Which prototype was easier to use? <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="flex flex-col gap-3">
+                                <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                    <input type="radio" name="eval-easier" value="Traditional" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="font-medium text-gray-800">Traditional Workflow</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                    <input type="radio" name="eval-easier" value="AI" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="font-medium text-gray-800">AI-Assisted Workflow</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="space-y-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                            <legend class="font-semibold text-gray-900 px-1">Which prototype are you most likely to use in the future? <span class="text-error" aria-hidden="true">*</span></legend>
+                            <div class="flex flex-col gap-3">
+                                <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                    <input type="radio" name="eval-likely-use" value="Traditional" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="font-medium text-gray-800">Traditional Workflow</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
+                                    <input type="radio" name="eval-likely-use" value="AI" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
+                                    <span class="font-medium text-gray-800">AI-Assisted Workflow</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <div class="space-y-2">
+                            <label for="eval-reason" class="block font-semibold text-gray-900">Reason for your preference <span class="text-error" aria-hidden="true">*</span></label>
+                            <textarea id="eval-reason" name="eval-reason" rows="3" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-white resize-y" placeholder="Please explain why you preferred one workflow over the other..."></textarea>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="eval-suggestions" class="block font-semibold text-gray-900">Suggestions for improvement (Optional)</label>
+                            <textarea id="eval-suggestions" name="eval-suggestions" rows="3" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-white resize-y" placeholder="How could we make the experience better?"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-200">
+                        <button id="btn-submit-study" type="submit" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light text-lg">Submit Responses</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </template>
+
+    <!-- Thank You / Debrief View -->
+    <template id="view-thank-you">
+        <section class="w-full max-w-2xl mx-auto slide-in" aria-labelledby="thanks-title">
+            <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center border border-gray-100">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success-light text-success mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                
+                <h1 id="thanks-title" class="text-3xl font-bold text-gray-900 mb-4">Thank You!</h1>
+                <p class="text-lg text-gray-600 mb-8">Your responses have been securely saved.</p>
+                
+                <div class="bg-gray-50 p-6 rounded-xl text-left mb-8 border border-gray-200 shadow-sm">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Debriefing Information</h2>
+                    <div class="space-y-4 text-gray-700">
+                        <p>Thank you for taking part in this research study. Your participation is greatly appreciated.</p>
+                        <p><strong class="text-gray-900">Nature of research:</strong> This study explored how users interact with and perceive two different digital wardrobe recommendation workflows: a traditional manual workflow and an AI-assisted workflow. Participants completed both workflows to compare their usability, interaction experience, perceived usefulness, confidence, and overall preference.</p>
+                        <p>The traditional workflow required participants to manually create a complete digital wardrobe before receiving outfit recommendations. This represents the approach commonly used by existing wardrobe applications. The AI-assisted workflow was designed to reduce the effort required by automatically recognising clothing items from images, while allowing users to review and correct any errors.</p>
+                        <p>The findings from this study will contribute to research on artificial intelligence, user experience design, and digital wardrobe recommendation systems.</p>
+                        <p><strong class="text-gray-900">Your Data:</strong> Your data will be handled as described in the Participant Information Sheet and Consent Form (EMS12334). All responses are anonymous, securely stored, and accessible only to the researcher and project supervisors. If you wish to withdraw your data, you may do so before data analysis begins.</p>
+                        <p><strong class="text-gray-900">Sources of Support:</strong> If taking part in this study has raised any concerns or caused any distress, you may contact Abertay University Student Counselling and Support Services (<a href="https://www.abertay.ac.uk/life/student-support-and-services/counselling/" class="text-primary underline" target="_blank">Website</a>). Alternatively, you may wish to contact your GP or another appropriate support service.</p>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600">
+                        <p class="mb-1"><strong class="text-gray-900">Researcher:</strong> Oluwatofunmi Oluwole (2506006@abertay.ac.uk)</p>
+                        <p><strong class="text-gray-900">Supervisors:</strong> Professor Vera K
+                        <p class="mb-1"><strong class="text-gray-900">Researcher:</strong> Oluwatofunmi Oluwole (2506006@abertay.ac.uk)</p>
+                        <p><strong class="text-gray-900">Supervisors:</strong> Professor Vera Kempe & Professor Stefano De Paoli</p>
+                    </div>
+                </div>
+
+                <div class="bg-primary-light p-6 rounded-xl mb-10 text-left border border-indigo-100 shadow-sm flex flex-col items-center sm:flex-row sm:justify-between sm:items-center">
+                    <p class="font-bold text-primary mb-2 sm:mb-0">Your Anonymous Participant ID:</p>
+                    <code id="final-participant-id" class="text-lg font-mono font-bold text-gray-900 bg-white px-4 py-2 rounded shadow-sm border border-gray-200 select-all">P-XXX-XXX</code>
+                </div>
+
+                <button onclick="window.App.exitStudy()" class="w-full bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 font-bold py-4 px-6 rounded-xl transition-all focus:outline-none focus:ring-4 focus:ring-gray-200">You may now close this tab</button>
+            </div>
+        </section>
+    </template>
+
+    <!-- Error View -->
+    <template id="view-error">
+        <section class="w-full max-w-lg mx-auto slide-in">
+            <div class="bg-white rounded-2xl shadow-xl p-8 md:p-10 text-center border-t-8 border-error">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 text-error mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-4">Connection Error</h1>
+                <p id="error-desc" class="text-gray-600 mb-8">We couldn't save your responses. Please check your internet connection and try again.</p>
+                <button id="btn-retry-submit" class="w-full bg-error hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-red-200">Retry Submission</button>
+            </div>
+        </section>
+    </template>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/tracking.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/views.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

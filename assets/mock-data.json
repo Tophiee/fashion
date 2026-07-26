@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "category": "Top",
+        "color": "Blue",
+        "brand": "Cotton T-Shirt"
+    },
+    {
+        "id": 2,
+        "category": "Bottom",
+        "color": "Black",
+        "brand": "Denim Jeans"
+    },
+    {
+        "id": 3,
+        "category": "Outerwear",
+        "color": "Green",
+        "brand": "Winter Jacket"
+    }
+]
