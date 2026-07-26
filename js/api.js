@@ -5,7 +5,7 @@
 
 const API = {
     getScriptUrl() {
-        return window.Config && window.Config.SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' 
+        return window.Config && window.Config.SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyqgj9MJuEvSCZLF9L0DSVtcqeKvtdr5LoXoI16jouE1ulbapitZuPuxbFEluBDP9LO/exec' 
             ? window.Config.SCRIPT_URL 
             : null;
     },
