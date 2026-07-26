@@ -12,6 +12,7 @@ const API = {
 
     async getConditionCounts() {
         const url = this.getScriptUrl();
+        console.log({mode:window.Config.ENVIRONMENT,url:url})
         
         // Development mode or placeholder URL fallback
         if (window.Config.ENVIRONMENT === 'development' || !url) {
