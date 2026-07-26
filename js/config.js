@@ -5,10 +5,10 @@
 
 const Config = {
     // Environment Mode: 'development', 'pilot', or 'production'
-    ENVIRONMENT: 'development',
+    ENVIRONMENT: 'production',
     
     // Replace with your Google Apps Script Web App URL
-    SCRIPT_URL: 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE',
+    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyqgj9MJuEvSCZLF9L0DSVtcqeKvtdr5LoXoI16jouE1ulbapitZuPuxbFEluBDP9LO/exec',
 
     // Researcher Information
     STUDY_TITLE: 'Design and Evaluation of an AI-Assisted Sustainable Wardrobe Recommendation System (EMS12334)',
