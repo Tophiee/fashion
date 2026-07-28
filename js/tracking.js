@@ -5,6 +5,7 @@
 
 const Tracker = {
     viewStartTimes: {},
+    abandonGraceTimer: null,
 
     init() {
         // Attach global click listener for click metrics
@@ -21,26 +22,42 @@ const Tracker = {
             window.Store.behavioral.validationErrorCount++;
         }, true); // Use capture phase because invalid events don't bubble
         
-        // Listen for tab close / abandonment
+        // Tab switch / background: wait grace period before abandoning
         window.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && window.Store.participant.completionStatus !== 'completed') {
-                this.sendAbandonmentBeacon();
+            if (window.Store.participant.completionStatus === 'completed') {
+                this.clearAbandonGraceTimer();
+                return;
+            }
+
+            if (document.visibilityState === 'hidden') {
+                this.scheduleAbandonmentBeacon();
+            } else if (document.visibilityState === 'visible') {
+                this.clearAbandonGraceTimer();
             }
         });
         
+        // Tab/window closing: beacon immediately (delayed timer cannot run after unload)
         window.addEventListener('pagehide', () => {
+            this.clearAbandonGraceTimer();
             if (window.Store.participant.completionStatus !== 'completed') {
                 this.sendAbandonmentBeacon();
             }
         });
         // Listen for Figma Embed API events
         window.addEventListener('message', (event) => {
-            // Verify origin is Figma
-            if (event.origin !== 'https://www.figma.com') return;
+            // Verify origin is Figma (Embed Kit 1.0 and 2.0)
+            if (event.origin !== 'https://www.figma.com' && event.origin !== 'https://embed.figma.com') return;
 
             try {
                 // Some messages are JSON strings, others might be objects
                 let data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+
+                console.log('[Figma Embed API]', {
+                    origin: event.origin,
+                    type: data && data.type,
+                    data: data,
+                    currentView: window.Store.app.currentView
+                });
                 
                 const currentView = window.Store.app.currentView;
                 if (!data || !currentView) return;
@@ -53,26 +70,47 @@ const Tracker = {
                 // Add timestamp
                 data.timestamp = new Date().toISOString();
 
+                const isClick = data.type === 'mouse_click' || data.type === 'MOUSE_PRESS_OR_RELEASE';
+                const isRoute = data.type === 'route_change' || data.type === 'PRESENTED_NODE_CHANGED';
+
                 // Store event based on current workflow
                 if (isTraditional) {
                     let log = JSON.parse(window.Store.experimental.traditionalEventsLog);
                     log.push(data);
                     window.Store.experimental.traditionalEventsLog = JSON.stringify(log);
                     
-                    if (data.type === 'route_change') window.Store.experimental.traditionalScreens++;
-                    if (data.type === 'mouse_click') window.Store.experimental.traditionalClicks++;
+                    if (isRoute) window.Store.experimental.traditionalScreens++;
+                    if (isClick) window.Store.experimental.traditionalClicks++;
                 } else {
                     let log = JSON.parse(window.Store.experimental.aiEventsLog);
                     log.push(data);
                     window.Store.experimental.aiEventsLog = JSON.stringify(log);
                     
-                    if (data.type === 'route_change') window.Store.experimental.aiScreens++;
-                    if (data.type === 'mouse_click') window.Store.experimental.aiClicks++;
+                    if (isRoute) window.Store.experimental.aiScreens++;
+                    if (isClick) window.Store.experimental.aiClicks++;
                 }
             } catch (err) {
-                // Ignore non-JSON messages from other sources
+                console.log('[Figma Embed API] non-JSON / ignored message', event.origin, event.data);
             }
         });
+    },
+
+    clearAbandonGraceTimer() {
+        if (this.abandonGraceTimer) {
+            clearTimeout(this.abandonGraceTimer);
+            this.abandonGraceTimer = null;
+        }
+    },
+
+    scheduleAbandonmentBeacon() {
+        this.clearAbandonGraceTimer();
+        const graceMs = (window.Config && window.Config.ABANDON_GRACE_MS) || (5 * 60 * 1000);
+        this.abandonGraceTimer = setTimeout(() => {
+            this.abandonGraceTimer = null;
+            if (window.Store.participant.completionStatus !== 'completed') {
+                this.sendAbandonmentBeacon();
+            }
+        }, graceMs);
     },
 
     recordClick() {
