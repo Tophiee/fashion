@@ -136,8 +136,13 @@
 
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <h3 class="text-lg font-bold text-gray-900 mb-2">Data Controller & Contact</h3>
-                        <p class="mb-1"><strong class="text-gray-900">Researcher:</strong> <span id="info-researcher-name">Oluwatofunmi Oluwole</span> (<span id="info-researcher-email">2506006@abertay.ac.uk</span>)</p>
-                        <p><strong class="text-gray-900">Supervisors:</strong> <span id="info-supervisor-name">Professor Vera Kempe & Professor Stefano De Paoli</span></p>
+                        <p class="mb-2"><strong class="text-gray-900">Data Controller:</strong> <span id="info-data-controller">Abertay University</span> (<a id="info-data-controller-email" href="mailto:DataProtectionOfficer@abertay.ac.uk" class="text-primary underline">DataProtectionOfficer@abertay.ac.uk</a>)</p>
+                        <p class="mb-1"><strong class="text-gray-900">Researcher:</strong> <span id="info-researcher-name">Oluwatofunmi Oluwole</span> — <a id="info-researcher-email" href="mailto:2506006@abertay.ac.uk" class="text-primary underline">2506006@abertay.ac.uk</a></p>
+                        <p class="mb-1"><strong class="text-gray-900">Supervisors:</strong></p>
+                        <ul class="list-none space-y-1 ml-0">
+                            <li><span id="info-supervisor-1-name">Professor Vera Kempe</span> — <a id="info-supervisor-1-email" href="mailto:v.kempe@abertay.ac.uk" class="text-primary underline">v.kempe@abertay.ac.uk</a></li>
+                            <li><span id="info-supervisor-2-name">Professor Stefano De Paoli</span> — <a id="info-supervisor-2-email" href="mailto:s.depaoli@abertay.ac.uk" class="text-primary underline">s.depaoli@abertay.ac.uk</a></li>
+                        </ul>
                     </div>
                 </div>
 
@@ -353,19 +358,19 @@
             </div>
             
             <div class="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-6">
-                <!-- Replace src with actual Figma URL -->
                 <iframe
                     id="tw-figma-frame"
-                    src="https://www.figma.com/embed?embed_host=wardrobe-study&client_id=IchHl4bHYpsxWIUVLQfqiD&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FISJjpOPd5lD33mFQKGsUQH%2FTraditional-Digital-Wardrobe-Management%3Fnode-id%3D2-407%26t%3DovmWkeVwjxpLVWMu-1"
+                    src="https://embed.figma.com/proto/ISJjpOPd5lD33mFQKGsUQH/Traditional-Digital-Wardrobe-Management?node-id=2-407&embed-host=wardrobe-study&client-id=IchHl4bHYpsxWIUVLQfqiD&hide-ui=1&footer=false"
                     width="100%"
                     height="800"
                     style="border:none;"
+                    allowfullscreen
                     title="Traditional Workflow Prototype">
                 </iframe>
             </div>
 
             <div class="max-w-2xl mx-auto px-4">
-                <button id="btn-tw-complete" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">I have completed this task</button>
+                <button id="btn-tw-complete" hidden disabled class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">I have completed this task</button>
             </div>
         </section>
     </template>
@@ -383,19 +388,19 @@
             </div>
             
             <div class="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-6">
-                <!-- Replace src with actual Figma URL for AI workflow -->
                 <iframe
                     id="aw-figma-frame"
-                    src="https://www.figma.com/embed?embed_host=wardrobe-study&client_id=IchHl4bHYpsxWIUVLQfqiD&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FISJjpOPd5lD33mFQKGsUQH%2FTraditional-Digital-Wardrobe-Management%3Fnode-id%3D56-2%26t%3DovmWkeVwjxpLVWMu-1"
+                    src="https://embed.figma.com/proto/ISJjpOPd5lD33mFQKGsUQH/Traditional-Digital-Wardrobe-Management?node-id=56-2&embed-host=wardrobe-study&client-id=IchHl4bHYpsxWIUVLQfqiD&hide-ui=1&footer=false"
                     width="100%"
                     height="800"
                     style="border:none;"
+                    allowfullscreen
                     title="AI-Assisted Workflow Prototype">
                 </iframe>
             </div>
 
             <div class="max-w-2xl mx-auto px-4">
-                <button id="btn-aw-complete" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">I have completed this task</button>
+                <button id="btn-aw-complete" hidden disabled class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-primary-light">I have completed this task</button>
             </div>
         </section>
     </template>
@@ -418,8 +423,8 @@
     <template id="view-post-study">
         <section class="w-full max-w-2xl mx-auto slide-in" aria-labelledby="eval-title">
             <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-gray-100 max-h-[85vh] overflow-y-auto">
-                <h1 id="eval-title" class="text-2xl font-bold text-gray-900 mb-2">Evaluation</h1>
-                <p class="text-gray-600 mb-8 pb-4 border-b border-gray-200">Please evaluate both workflows you just experienced.</p>
+                <h1 id="eval-title" class="text-2xl font-bold text-gray-900 mb-2">Post-study Questionnaire</h1>
+                <p class="text-gray-600 mb-8 pb-4 border-b border-gray-200">Thank you for completing both prototypes. Please answer the following questions based on your experience.</p>
                 
                 <div id="post-study-error" class="text-error font-semibold mb-6 p-4 bg-red-50 rounded-lg hidden" aria-live="assertive"></div>
 
@@ -427,11 +432,11 @@
                     
                     <!-- Traditional Prototype Ratings -->
                     <div class="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-200 space-y-8">
-                        <h2 class="text-xl font-bold text-gray-900 border-b border-gray-200 pb-3">Traditional Workflow Evaluation</h2>
+                        <h2 class="text-xl font-bold text-gray-900 border-b border-gray-200 pb-3">Part A: Evaluation of the Traditional Workflow</h2>
+                        <p class="text-sm text-gray-600">Please rate the Traditional Workflow by selecting a score from 1 to 5, where: 1 = Very Poor, 2 = Poor, 3 = Fair, 4 = Good, 5 = Excellent.</p>
                         
-                        <!-- Helper block to make the likert code reusable -->
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Overall rating <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Overall, how would you rate your experience using the Traditional Workflow? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-rating-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -457,7 +462,7 @@
                         </div>
 
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Ease of use <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">How easy was the Traditional Workflow to use? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-ease-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -483,7 +488,7 @@
                         </div>
 
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Usefulness <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">How useful was the Traditional Workflow for completing the wardrobe recommendation task? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-useful-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -509,7 +514,7 @@
                         </div>
 
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Confidence completing tasks <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">How confident did you feel while using the Traditional Workflow? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-conf-traditional" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -537,10 +542,11 @@
 
                     <!-- AI Prototype Ratings -->
                     <div class="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-200 space-y-8">
-                        <h2 class="text-xl font-bold text-gray-900 border-b border-gray-200 pb-3">AI-Assisted Workflow Evaluation</h2>
+                        <h2 class="text-xl font-bold text-gray-900 border-b border-gray-200 pb-3">Part B: Evaluation of the AI-Assisted Workflow</h2>
+                        <p class="text-sm text-gray-600">Please rate the AI-Assisted Workflow using the same scale: 1 = Very Poor, 2 = Poor, 3 = Fair, 4 = Good, 5 = Excellent.</p>
                         
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Overall rating <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">Overall, how would you rate your experience using the AI-Assisted Workflow? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-rating-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -566,7 +572,7 @@
                         </div>
 
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Ease of use <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">How easy was the AI-Assisted Workflow to use? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-ease-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -592,7 +598,7 @@
                         </div>
 
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Usefulness <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">How useful was the AI-Assisted Workflow for completing the wardrobe recommendation task? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-useful-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -618,7 +624,7 @@
                         </div>
 
                         <div class="space-y-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                            <legend class="font-semibold text-gray-900 mb-2 px-1">Confidence completing tasks <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 mb-2 px-1">How confident did you feel while using the AI-Assisted Workflow? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
                                 <label class="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors text-center">
                                     <input type="radio" name="eval-conf-ai" value="1" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -646,10 +652,10 @@
 
                     <!-- Comparative Questions -->
                     <div class="space-y-8 pt-4 border-t border-gray-200">
-                        <h2 class="text-xl font-bold text-gray-900">Overall Comparison</h2>
+                        <h2 class="text-xl font-bold text-gray-900">Part C: Overall Comparison</h2>
 
                         <fieldset class="space-y-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <legend class="font-semibold text-gray-900 px-1">Which prototype did you prefer? <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 px-1">Which prototype did you prefer overall? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="flex flex-col gap-3">
                                 <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
                                     <input type="radio" name="eval-preference" value="Traditional" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -663,7 +669,7 @@
                         </fieldset>
 
                         <fieldset class="space-y-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <legend class="font-semibold text-gray-900 px-1">Which prototype was easier to use? <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 px-1">Which prototype did you find easier to use? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="flex flex-col gap-3">
                                 <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
                                     <input type="radio" name="eval-easier" value="Traditional" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -677,7 +683,7 @@
                         </fieldset>
 
                         <fieldset class="space-y-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <legend class="font-semibold text-gray-900 px-1">Which prototype are you most likely to use in the future? <span class="text-error" aria-hidden="true">*</span></legend>
+                            <legend class="font-semibold text-gray-900 px-1">Which prototype would you be more likely to use in everyday life? <span class="text-error" aria-hidden="true">*</span></legend>
                             <div class="flex flex-col gap-3">
                                 <label class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer focus-within:ring-2 focus-within:ring-primary transition-colors">
                                     <input type="radio" name="eval-likely-use" value="Traditional" required class="w-5 h-5 text-primary border-gray-300 focus:ring-primary">
@@ -691,13 +697,13 @@
                         </fieldset>
 
                         <div class="space-y-2">
-                            <label for="eval-reason" class="block font-semibold text-gray-900">Reason for your preference <span class="text-error" aria-hidden="true">*</span></label>
-                            <textarea id="eval-reason" name="eval-reason" rows="3" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-white resize-y" placeholder="Please explain why you preferred one workflow over the other..."></textarea>
+                            <label for="eval-reason" class="block font-semibold text-gray-900">Why did you prefer that prototype? <span class="text-error" aria-hidden="true">*</span></label>
+                            <textarea id="eval-reason" name="eval-reason" rows="3" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-white resize-y" placeholder="Please explain your answer."></textarea>
                         </div>
 
                         <div class="space-y-2">
-                            <label for="eval-suggestions" class="block font-semibold text-gray-900">Suggestions for improvement (Optional)</label>
-                            <textarea id="eval-suggestions" name="eval-suggestions" rows="3" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-white resize-y" placeholder="How could we make the experience better?"></textarea>
+                            <label for="eval-suggestions" class="block font-semibold text-gray-900">Do you have any suggestions for improving either prototype?</label>
+                            <textarea id="eval-suggestions" name="eval-suggestions" rows="3" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-3 px-4 bg-white resize-y" placeholder="Please provide any comments or recommendations."></textarea>
                         </div>
                     </div>
 
@@ -731,11 +737,14 @@
                         <p><strong class="text-gray-900">Sources of Support:</strong> If taking part in this study has raised any concerns or caused any distress, you may contact Abertay University Student Counselling and Support Services (<a href="https://www.abertay.ac.uk/life/student-support-and-services/counselling/" class="text-primary underline" target="_blank">Website</a>). Alternatively, you may wish to contact your GP or another appropriate support service.</p>
                     </div>
                     
-                    <div class="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600">
-                        <p class="mb-1"><strong class="text-gray-900">Researcher:</strong> Oluwatofunmi Oluwole (2506006@abertay.ac.uk)</p>
-                        <p><strong class="text-gray-900">Supervisors:</strong> Professor Vera K
-                        <p class="mb-1"><strong class="text-gray-900">Researcher:</strong> Oluwatofunmi Oluwole (2506006@abertay.ac.uk)</p>
-                        <p><strong class="text-gray-900">Supervisors:</strong> Professor Vera Kempe & Professor Stefano De Paoli</p>
+                    <div class="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600 space-y-2">
+                        <p><strong class="text-gray-900">Data Controller:</strong> <span id="debrief-data-controller">Abertay University</span> (<a id="debrief-data-controller-email" href="mailto:DataProtectionOfficer@abertay.ac.uk" class="text-primary underline">DataProtectionOfficer@abertay.ac.uk</a>)</p>
+                        <p><strong class="text-gray-900">Researcher:</strong> <span id="debrief-researcher-name">Oluwatofunmi Oluwole</span> — <a id="debrief-researcher-email" href="mailto:2506006@abertay.ac.uk" class="text-primary underline">2506006@abertay.ac.uk</a></p>
+                        <p><strong class="text-gray-900">Supervisors:</strong></p>
+                        <ul class="list-none space-y-1">
+                            <li><span id="debrief-supervisor-1-name">Professor Vera Kempe</span> — <a id="debrief-supervisor-1-email" href="mailto:v.kempe@abertay.ac.uk" class="text-primary underline">v.kempe@abertay.ac.uk</a></li>
+                            <li><span id="debrief-supervisor-2-name">Professor Stefano De Paoli</span> — <a id="debrief-supervisor-2-email" href="mailto:s.depaoli@abertay.ac.uk" class="text-primary underline">s.depaoli@abertay.ac.uk</a></li>
+                        </ul>
                     </div>
                 </div>
 
