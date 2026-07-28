@@ -4,6 +4,30 @@
  */
 
 window.Views = {
+    _scheduleTaskCompleteReveal(btn) {
+        if (!btn) return;
+        btn.hidden = true;
+        btn.disabled = true;
+        const minMs = (window.Config && window.Config.TASK_COMPLETE_DELAY_MIN_MS) || (2 * 60 * 1000);
+        const maxMs = (window.Config && window.Config.TASK_COMPLETE_DELAY_MAX_MS) || (5 * 60 * 1000);
+        const delayMs = minMs + Math.random() * (maxMs - minMs);
+        setTimeout(() => {
+            btn.hidden = false;
+            btn.disabled = false;
+        }, delayMs);
+    },
+
+    _fillContactFields(elements) {
+        for (const [id, value] of Object.entries(elements)) {
+            const el = document.getElementById(id);
+            if (!el || !value) continue;
+            el.textContent = value;
+            if (el.tagName === 'A' && value.includes('@')) {
+                el.setAttribute('href', 'mailto:' + value);
+            }
+        }
+    },
+
     'landing': {
         init() {
             if (window.Config) {
@@ -23,15 +47,16 @@ window.Views = {
     'info-sheet': {
         init() {
             if (window.Config) {
-                const elements = {
+                window.Views._fillContactFields({
+                    'info-data-controller': window.Config.DATA_CONTROLLER,
+                    'info-data-controller-email': window.Config.DATA_CONTROLLER_EMAIL,
                     'info-researcher-name': window.Config.RESEARCHER_NAME,
                     'info-researcher-email': window.Config.RESEARCHER_EMAIL,
-                };
-                
-                for (const [id, value] of Object.entries(elements)) {
-                    const el = document.getElementById(id);
-                    if (el && value) el.textContent = value;
-                }
+                    'info-supervisor-1-name': window.Config.SUPERVISOR_1_NAME,
+                    'info-supervisor-1-email': window.Config.SUPERVISOR_1_EMAIL,
+                    'info-supervisor-2-name': window.Config.SUPERVISOR_2_NAME,
+                    'info-supervisor-2-email': window.Config.SUPERVISOR_2_EMAIL,
+                });
             }
             
             document.getElementById('btn-continue-consent').addEventListener('click', () => {
@@ -131,8 +156,19 @@ window.Views = {
             
             // Start timer
             const startTime = Date.now();
+            const completeBtn = document.getElementById('btn-tw-complete');
+
+            console.log('[Figma Embed API] Workflow started. Events only fire if:', {
+                pageOrigin: window.location.origin,
+                note: '1) This exact origin is allowlisted in your Figma OAuth app Embed API settings',
+                note2: '2) You are logged into Figma in this browser (required by Figma as of 2026)',
+                note3: '3) Study is served over http(s), not file://',
+                iframeSrc: document.getElementById('tw-figma-frame') && document.getElementById('tw-figma-frame').src
+            });
             
-            document.getElementById('btn-tw-complete').addEventListener('click', () => {
+            window.Views._scheduleTaskCompleteReveal(completeBtn);
+            
+            completeBtn.addEventListener('click', () => {
                 const endTime = Date.now();
                 const interactionTime = (endTime - startTime) / 1000;
                 window.Store.experimental.traditionalTime = interactionTime;
@@ -149,8 +185,19 @@ window.Views = {
             
             // Start timer
             const startTime = Date.now();
+            const completeBtn = document.getElementById('btn-aw-complete');
+
+            console.log('[Figma Embed API] Workflow started. Events only fire if:', {
+                pageOrigin: window.location.origin,
+                note: '1) This exact origin is allowlisted in your Figma OAuth app Embed API settings',
+                note2: '2) You are logged into Figma in this browser (required by Figma as of 2026)',
+                note3: '3) Study is served over http(s), not file://',
+                iframeSrc: document.getElementById('aw-figma-frame') && document.getElementById('aw-figma-frame').src
+            });
             
-            document.getElementById('btn-aw-complete').addEventListener('click', () => {
+            window.Views._scheduleTaskCompleteReveal(completeBtn);
+            
+            completeBtn.addEventListener('click', () => {
                 const endTime = Date.now();
                 const interactionTime = (endTime - startTime) / 1000;
                 window.Store.experimental.aiTime = interactionTime;
@@ -228,6 +275,19 @@ window.Views = {
     'thank-you': {
         init() {
             document.getElementById('final-participant-id').textContent = window.Store.participant.id;
+
+            if (window.Config) {
+                window.Views._fillContactFields({
+                    'debrief-data-controller': window.Config.DATA_CONTROLLER,
+                    'debrief-data-controller-email': window.Config.DATA_CONTROLLER_EMAIL,
+                    'debrief-researcher-name': window.Config.RESEARCHER_NAME,
+                    'debrief-researcher-email': window.Config.RESEARCHER_EMAIL,
+                    'debrief-supervisor-1-name': window.Config.SUPERVISOR_1_NAME,
+                    'debrief-supervisor-1-email': window.Config.SUPERVISOR_1_EMAIL,
+                    'debrief-supervisor-2-name': window.Config.SUPERVISOR_2_NAME,
+                    'debrief-supervisor-2-email': window.Config.SUPERVISOR_2_EMAIL,
+                });
+            }
         }
     }
 };
