@@ -14,11 +14,23 @@ const Config = {
     STUDY_TITLE: 'Design and Evaluation of an AI-Assisted Sustainable Wardrobe Recommendation System (EMS12334)',
     RESEARCHER_NAME: 'Oluwatofunmi Oluwole',
     RESEARCHER_EMAIL: '2506006@abertay.ac.uk',
-    SUPERVISOR_NAME: 'Professor Vera Kempe & Professor Stefano De Paoli',
-    SUPERVISOR_EMAIL: '', // Handled in UI
+    DATA_CONTROLLER: 'Abertay University',
+    DATA_CONTROLLER_EMAIL: 'DataProtectionOfficer@abertay.ac.uk',
+    SUPERVISOR_1_NAME: 'Professor Vera Kempe',
+    SUPERVISOR_1_EMAIL: 'v.kempe@abertay.ac.uk',
+    SUPERVISOR_2_NAME: 'Professor Stefano De Paoli',
+    SUPERVISOR_2_EMAIL: 's.depaoli@abertay.ac.uk',
     
     // Estimated time in minutes
     ESTIMATED_TIME: '10–15',
+
+    // Abandonment: only beacon after this long away on tab switch (page close still beacons immediately)
+    ABANDON_GRACE_MS: 5 * 60 * 1000,
+
+    // Task-complete button reveal delay range (minutes)
+    TASK_COMPLETE_DELAY_MIN_MS: 2 * 60 * 1000,
+    TASK_COMPLETE_DELAY_MAX_MS: 5 * 60 * 1000,
+    
 
     // Mock Dataset mapping perfectly to the provided image list
     MOCK_AI_DATA: [
