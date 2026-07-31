@@ -26,10 +26,6 @@ const Config = {
 
     // Abandonment: only beacon after this long away on tab switch (page close still beacons immediately)
     ABANDON_GRACE_MS: 5 * 60 * 1000,
-
-    // Task-complete button reveal delay range (minutes)
-    TASK_COMPLETE_DELAY_MIN_MS: 2 * 60 * 1000,
-    TASK_COMPLETE_DELAY_MAX_MS: 5 * 60 * 1000,
     
 
     // Mock Dataset mapping perfectly to the provided image list
