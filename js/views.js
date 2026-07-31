@@ -4,19 +4,6 @@
  */
 
 window.Views = {
-    _scheduleTaskCompleteReveal(btn) {
-        if (!btn) return;
-        btn.hidden = true;
-        btn.disabled = true;
-        const minMs = (window.Config && window.Config.TASK_COMPLETE_DELAY_MIN_MS) || (2 * 60 * 1000);
-        const maxMs = (window.Config && window.Config.TASK_COMPLETE_DELAY_MAX_MS) || (5 * 60 * 1000);
-        const delayMs = minMs + Math.random() * (maxMs - minMs);
-        setTimeout(() => {
-            btn.hidden = false;
-            btn.disabled = false;
-        }, delayMs);
-    },
-
     _fillContactFields(elements) {
         for (const [id, value] of Object.entries(elements)) {
             const el = document.getElementById(id);
@@ -166,8 +153,6 @@ window.Views = {
                 iframeSrc: document.getElementById('tw-figma-frame') && document.getElementById('tw-figma-frame').src
             });
             
-            window.Views._scheduleTaskCompleteReveal(completeBtn);
-            
             completeBtn.addEventListener('click', () => {
                 const endTime = Date.now();
                 const interactionTime = (endTime - startTime) / 1000;
@@ -194,8 +179,6 @@ window.Views = {
                 note3: '3) Study is served over http(s), not file://',
                 iframeSrc: document.getElementById('aw-figma-frame') && document.getElementById('aw-figma-frame').src
             });
-            
-            window.Views._scheduleTaskCompleteReveal(completeBtn);
             
             completeBtn.addEventListener('click', () => {
                 const endTime = Date.now();
