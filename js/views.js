@@ -4,6 +4,39 @@
  */
 
 window.Views = {
+    /**
+     * Sets up the mobile tap-to-interact overlay for Figma iframes.
+     * On touch devices: overlay blocks iframe so page is scrollable.
+     * User taps overlay → iframe becomes interactive, lock button appears.
+     * User taps lock → overlay returns so they can scroll again.
+     */
+    _setupPrototypeOverlay(overlayId, lockBtnId, scrollHintId) {
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (!isTouchDevice) return; // Desktop: do nothing, CSS hides everything
+
+        const overlay = document.getElementById(overlayId);
+        const lockBtn = document.getElementById(lockBtnId);
+        const scrollHint = document.getElementById(scrollHintId);
+
+        if (!overlay || !lockBtn) return;
+
+        // Show the overlay and scroll hint on mobile
+        overlay.classList.add('active');
+        if (scrollHint) scrollHint.classList.add('active');
+
+        // Tap overlay → unlock iframe
+        overlay.addEventListener('click', () => {
+            overlay.classList.remove('active');
+            lockBtn.classList.add('active');
+        });
+
+        // Tap lock → re-lock iframe so user can scroll
+        lockBtn.addEventListener('click', () => {
+            lockBtn.classList.remove('active');
+            overlay.classList.add('active');
+        });
+    },
+
     _fillContactFields(elements) {
         for (const [id, value] of Object.entries(elements)) {
             const el = document.getElementById(id);
@@ -141,6 +174,9 @@ window.Views = {
             const orderNum = window.Store.app.workflowsToRun[0] === 'traditional-workflow' ? '1' : '2';
             document.getElementById('tw-order-num').textContent = orderNum;
             
+            // Setup mobile tap-to-interact overlay
+            window.Views._setupPrototypeOverlay('tw-overlay', 'tw-lock-btn', 'tw-scroll-hint');
+            
             // Start timer
             const startTime = Date.now();
             const completeBtn = document.getElementById('btn-tw-complete');
@@ -167,6 +203,9 @@ window.Views = {
         init() {
             const orderNum = window.Store.app.workflowsToRun[0] === 'ai-workflow' ? '1' : '2';
             document.getElementById('aw-order-num').textContent = orderNum;
+            
+            // Setup mobile tap-to-interact overlay
+            window.Views._setupPrototypeOverlay('aw-overlay', 'aw-lock-btn', 'aw-scroll-hint');
             
             // Start timer
             const startTime = Date.now();
