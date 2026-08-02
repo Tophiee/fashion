@@ -112,3 +112,154 @@ input[type="radio"]:focus, input[type="checkbox"]:focus {
     outline: none;
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px #4338CA;
 }
+
+/* ===== Mobile-Friendly Prototype Container ===== */
+
+.prototype-container {
+    position: relative;
+    width: 100%;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+    overflow: hidden;
+    border: 1px solid #f3f4f6;
+    margin-bottom: 1.5rem;
+}
+
+/* On mobile: constrain iframe height so page is scrollable around it */
+.prototype-container iframe {
+    display: block;
+    width: 100%;
+    height: 70vh;
+    min-height: 400px;
+    max-height: 800px;
+    border: none;
+}
+
+/* Tap-to-interact overlay — shown on mobile only */
+.prototype-overlay {
+    display: none; /* hidden by default, JS shows on touch devices */
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: rgba(67, 56, 202, 0.08);
+    backdrop-filter: blur(1px);
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.prototype-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    animation: pulse-gentle 2s ease-in-out infinite;
+}
+
+.overlay-content svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #4338CA;
+}
+
+.overlay-content span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+@keyframes pulse-gentle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+/* Scroll hint at the bottom of the container */
+.scroll-hint {
+    display: none; /* hidden by default, JS shows on touch devices */
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(to top, rgba(255,255,255,0.98), rgba(255,255,255,0.85));
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+}
+
+.scroll-hint.active {
+    display: block;
+}
+
+.scroll-hint span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    animation: bounce-hint 2s ease-in-out infinite;
+}
+
+@keyframes bounce-hint {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
+}
+
+/* Lock/unlock button — appears after the overlay is dismissed on mobile */
+.prototype-lock-btn {
+    display: none; /* hidden by default, JS shows after unlocking */
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 15;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #4338CA;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.5px solid #4338CA;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.prototype-lock-btn:hover {
+    background: #4338CA;
+    color: #fff;
+}
+
+.prototype-lock-btn.active {
+    display: block;
+}
+
+/* Desktop overrides — full height, no overlays */
+@media (min-width: 768px) {
+    .prototype-container iframe {
+        height: 800px;
+        max-height: none;
+    }
+
+    .prototype-overlay,
+    .prototype-overlay.active {
+        display: none !important;
+    }
+
+    .scroll-hint,
+    .scroll-hint.active {
+        display: none !important;
+    }
+
+    .prototype-lock-btn,
+    .prototype-lock-btn.active {
+        display: none !important;
+    }
+}
