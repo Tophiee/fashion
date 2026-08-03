@@ -28,6 +28,12 @@ const App = {
         window.Store.initParticipant();
         window.Tracker.init();
         
+        // Restore session if browser discarded tab or reloaded
+        const restored = window.Store.restoreState();
+        if (restored) {
+            console.log('🔄 Session restored from sessionStorage at step index:', this.currentFlowIndex);
+        }
+
         // Prevent accidental back navigation
         window.history.pushState(null, '', window.location.href);
         window.addEventListener('popstate', () => {
@@ -104,6 +110,9 @@ const App = {
         // Start tracking new view
         window.Tracker.startViewTimer(viewName);
         this.updateProgressBar();
+
+        // Save progress to session storage
+        window.Store.saveState();
 
         // Initialize view-specific logic
         if (window.Views && window.Views[viewName]) {
