@@ -25,7 +25,7 @@ const Config = {
     ESTIMATED_TIME: '10–15',
 
     // Abandonment: only beacon after this long away on tab switch (page close still beacons immediately)
-    ABANDON_GRACE_MS: 5 * 60 * 1000,
+    ABANDON_GRACE_MS: 30 * 60 * 1000,
     
 
     // Mock Dataset mapping perfectly to the provided image list
