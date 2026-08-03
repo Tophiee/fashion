@@ -25,16 +25,22 @@ window.Views = {
         if (scrollHint) scrollHint.classList.add('active');
 
         // Tap overlay → unlock iframe
-        overlay.addEventListener('click', () => {
+        const unlockPrototype = (e) => {
+            e.preventDefault();
             overlay.classList.remove('active');
             lockBtn.classList.add('active');
-        });
+        };
+        overlay.addEventListener('pointerdown', unlockPrototype);
+        overlay.addEventListener('click', unlockPrototype);
 
         // Tap lock → re-lock iframe so user can scroll
-        lockBtn.addEventListener('click', () => {
+        const lockPrototype = (e) => {
+            e.preventDefault();
             lockBtn.classList.remove('active');
             overlay.classList.add('active');
-        });
+        };
+        lockBtn.addEventListener('pointerdown', lockPrototype);
+        lockBtn.addEventListener('click', lockPrototype);
     },
 
     _fillContactFields(elements) {
