@@ -790,6 +790,9 @@
         </section>
     </template>
 
+    <!-- Hidden input to reset focus for iframe click tracking -->
+    <input id="focus-reset-trigger" style="position: absolute; top: -100px; opacity: 0;" aria-hidden="true" tabindex="-1">
+
     <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/state.js"></script>
