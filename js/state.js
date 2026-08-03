@@ -159,6 +159,48 @@ const Store = {
             screenResolution: this.metadata.screenResolution,
             sessionID: this.metadata.sessionID
         };
+    },
+
+    saveState() {
+        try {
+            const dataToSave = {
+                participant: this.participant,
+                experimental: this.experimental,
+                behavioral: this.behavioral,
+                demographics: this.demographics,
+                questionnaire: this.questionnaire,
+                appWorkflowsToRun: this.app.workflowsToRun,
+                currentFlowIndex: window.App ? window.App.currentFlowIndex : 0
+            };
+            sessionStorage.setItem('wardrobe_study_state', JSON.stringify(dataToSave));
+        } catch (e) {
+            console.warn('Could not save state to sessionStorage', e);
+        }
+    },
+
+    restoreState() {
+        try {
+            const saved = sessionStorage.getItem('wardrobe_study_state');
+            if (!saved) return false;
+            const data = JSON.parse(saved);
+            if (data.participant && data.participant.id) {
+                this.participant = Object.assign(this.participant, data.participant);
+                this.experimental = Object.assign(this.experimental, data.experimental);
+                this.behavioral = Object.assign(this.behavioral, data.behavioral);
+                this.demographics = Object.assign(this.demographics, data.demographics);
+                this.questionnaire = Object.assign(this.questionnaire, data.questionnaire);
+                if (data.appWorkflowsToRun) {
+                    this.app.workflowsToRun = data.appWorkflowsToRun;
+                }
+                if (typeof data.currentFlowIndex === 'number' && window.App) {
+                    window.App.currentFlowIndex = data.currentFlowIndex;
+                }
+                return true;
+            }
+        } catch (e) {
+            console.warn('Could not restore state from sessionStorage', e);
+        }
+        return false;
     }
 };
 
