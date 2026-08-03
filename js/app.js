@@ -98,6 +98,16 @@ const App = {
             window.Tracker.stopViewTimer(window.Store.app.currentView);
         }
 
+        // Clean up current iframe to release memory before removing it from DOM
+        const existingIframe = this.root.querySelector('iframe');
+        if (existingIframe) {
+            try {
+                existingIframe.src = 'about:blank';
+            } catch (e) {
+                console.warn('[Memory Cleanup] Failed to clear iframe src:', e);
+            }
+        }
+
         // Render new view
         this.root.innerHTML = '';
         const node = template.content.cloneNode(true);
