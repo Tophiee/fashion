@@ -189,7 +189,8 @@ window.Views = {
                 iframeSrc: document.getElementById('tw-figma-frame') && document.getElementById('tw-figma-frame').src
             });
             
-            completeBtn.addEventListener('click', () => {
+            completeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const endTime = Date.now();
                 const interactionTime = (endTime - startTime) / 1000;
                 window.Store.experimental.traditionalTime = interactionTime;
@@ -219,7 +220,8 @@ window.Views = {
                 iframeSrc: document.getElementById('aw-figma-frame') && document.getElementById('aw-figma-frame').src
             });
             
-            completeBtn.addEventListener('click', () => {
+            completeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const endTime = Date.now();
                 const interactionTime = (endTime - startTime) / 1000;
                 window.Store.experimental.aiTime = interactionTime;
@@ -276,6 +278,7 @@ window.Views = {
                         window.App.hideLoading();
                         
                         if (success) {
+                            sessionStorage.removeItem('wardrobe_study_state');
                             window.App.next();
                         } else {
                             window.App.showErrorView("API returned an error. Please try again.");
