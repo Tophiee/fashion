@@ -45,19 +45,22 @@ const Tracker = {
         });
         // Listen for Figma Embed API events
         window.addEventListener('message', (event) => {
-            // Verify origin is Figma (Embed Kit 1.0 and 2.0)
-            if (event.origin !== 'https://www.figma.com' && event.origin !== 'https://embed.figma.com') return;
+            // Verify origin is Figma (supports figma.com, www.figma.com, embed.figma.com, etc.)
+            const isFigmaOrigin = /^https:\/\/(?:[a-z0-9-]+\.)?figma\.com$/i.test(event.origin);
+            if (!isFigmaOrigin) return;
 
             try {
                 // Some messages are JSON strings, others might be objects
                 let data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
 
-                console.log('[Figma Embed API]', {
-                    origin: event.origin,
-                    type: data && data.type,
-                    data: data,
-                    currentView: window.Store.app.currentView
-                });
+                if (window.Config && window.Config.ENVIRONMENT === 'development') {
+                    console.log('[Figma Embed Message Received]', {
+                        origin: event.origin,
+                        type: data && data.type,
+                        data: data,
+                        currentView: (window.Store && window.Store.app) ? window.Store.app.currentView : null
+                    });
+                }
                 
                 const currentView = window.Store.app.currentView;
                 if (!data || !currentView) return;
