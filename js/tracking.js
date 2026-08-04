@@ -43,10 +43,11 @@ const Tracker = {
                 this.sendAbandonmentBeacon();
             }
         });
-        // Global flags for focus click tracking workaround
-        let hasNativeFigmaEvents = false;
-        let focusClicksTraditional = 0;
-        let focusClicksAi = 0;
+        // Flags and state trackers for Figma interaction tracking
+        let lastNodeIdTraditional = null;
+        let lastNodeIdAi = null;
+        let lastNativeClickTimeTraditional = 0;
+        let lastNativeClickTimeAi = 0;
 
         // Listen for Figma Embed API events
         window.addEventListener('message', (event) => {
@@ -85,32 +86,77 @@ const Tracker = {
                 // Add timestamp safely
                 data.timestamp = new Date().toISOString();
 
-                // Normalize message type checking
+                // Normalize message type checking according to Figma Embed API documentation
                 const msgType = String(data.type || '').toUpperCase().trim();
-                const isClick = msgType === 'MOUSE_CLICK' || msgType === 'MOUSE_PRESS_OR_RELEASE';
-                const isRoute = msgType === 'ROUTE_CHANGE' || msgType === 'PRESENTED_NODE_CHANGED';
+                const isExplicitClick = msgType === 'MOUSE_CLICK' || 
+                                       msgType === 'MOUSE_PRESS_OR_RELEASE' || 
+                                       msgType === 'MOUSE_UP' || 
+                                       msgType === 'MOUSE_DOWN' || 
+                                       msgType === 'NODE_CLICK' ||
+                                       msgType === 'TAP';
+                                       
+                const isPresentedNodeChange = msgType === 'PRESENTED_NODE_CHANGED';
+                const isInitialLoad = msgType === 'INITIAL_LOAD';
+                const isRoute = isPresentedNodeChange || msgType === 'ROUTE_CHANGE';
 
-                if (isClick || isRoute) {
-                    hasNativeFigmaEvents = true; // Switch off the focus fallback since native events are working
+                const now = Date.now();
+
+                // 1. Handle Explicit Clicks emitted by Figma Embed API
+                if (isExplicitClick) {
+                    if (isTraditional) {
+                        window.Store.experimental.traditionalClicks++;
+                        lastNativeClickTimeTraditional = now;
+                        let log = JSON.parse(window.Store.experimental.traditionalEventsLog);
+                        log.push(data);
+                        window.Store.experimental.traditionalEventsLog = JSON.stringify(log);
+                    } else if (isAi) {
+                        window.Store.experimental.aiClicks++;
+                        lastNativeClickTimeAi = now;
+                        let log = JSON.parse(window.Store.experimental.aiEventsLog);
+                        log.push(data);
+                        window.Store.experimental.aiEventsLog = JSON.stringify(log);
+                    }
                 }
 
-                // Store event
-                if (isTraditional) {
-                    let log = JSON.parse(window.Store.experimental.traditionalEventsLog);
-                    log.push(data);
-                    window.Store.experimental.traditionalEventsLog = JSON.stringify(log);
+                // 2. Handle Screen View Changes & Node Transitions
+                if (isPresentedNodeChange || isInitialLoad) {
+                    // Extract node ID from Figma payload structure
+                    const nodeId = data.data && (data.data.presentedNodeId || data.data.nodeId);
                     
-                    if (isRoute) window.Store.experimental.traditionalScreens++;
-                    if (isClick) window.Store.experimental.traditionalClicks++;
-                } else if (isAi) {
-                    let log = JSON.parse(window.Store.experimental.aiEventsLog);
-                    log.push(data);
-                    window.Store.experimental.aiEventsLog = JSON.stringify(log);
-                    
-                    if (isRoute) window.Store.experimental.aiScreens++;
-                    if (isClick) window.Store.experimental.aiClicks++;
+                    if (isTraditional) {
+                        // Count initial screen view or screen transitions when frame node ID changes
+                        if (!lastNodeIdTraditional || (nodeId && nodeId !== lastNodeIdTraditional)) {
+                            lastNodeIdTraditional = nodeId;
+                            window.Store.experimental.traditionalScreens++;
+
+                            // If screen changed and no explicit click event was logged within 800ms,
+                            // count the screen change trigger as a user click action
+                            if (now - lastNativeClickTimeTraditional > 800 && !isInitialLoad) {
+                                window.Store.experimental.traditionalClicks++;
+                                lastNativeClickTimeTraditional = now;
+                            }
+
+                            let log = JSON.parse(window.Store.experimental.traditionalEventsLog);
+                            log.push(data);
+                            window.Store.experimental.traditionalEventsLog = JSON.stringify(log);
+                        }
+                    } else if (isAi) {
+                        if (!lastNodeIdAi || (nodeId && nodeId !== lastNodeIdAi)) {
+                            lastNodeIdAi = nodeId;
+                            window.Store.experimental.aiScreens++;
+
+                            if (now - lastNativeClickTimeAi > 800 && !isInitialLoad) {
+                                window.Store.experimental.aiClicks++;
+                                lastNativeClickTimeAi = now;
+                            }
+
+                            let log = JSON.parse(window.Store.experimental.aiEventsLog);
+                            log.push(data);
+                            window.Store.experimental.aiEventsLog = JSON.stringify(log);
+                        }
+                    }
                 }
-                
+
                 // Save state to persist counter updates
                 window.Store.saveState();
             } catch (err) {
@@ -118,7 +164,7 @@ const Tracker = {
             }
         });
 
-        // Focus-Based Click Fallback (For when Figma API blocks MOUSE_PRESS_OR_RELEASE due to missing login or origin)
+        // Focus-Based Click Fallback (For when Figma Embed API messages are not emitted or blocked)
         window.addEventListener('blur', () => {
             // Wait a brief moment to let document.activeElement update
             setTimeout(() => {
@@ -129,9 +175,11 @@ const Tracker = {
                     const isAi = iframeId === 'aw-figma-frame';
 
                     if (isTraditional || isAi) {
-                        // If we are already receiving native events, do not double-count clicks/screens
-                        if (hasNativeFigmaEvents) {
-                            // Refocus parent to keep the focus loop running in case native events drop
+                        const now = Date.now();
+                        const lastClickTime = isTraditional ? lastNativeClickTimeTraditional : lastNativeClickTimeAi;
+
+                        // Debounce: If a native click or screen view was recorded in the last 600ms, skip fallback duplicate
+                        if (now - lastClickTime < 600) {
                             const resetTrigger = document.getElementById('focus-reset-trigger');
                             if (resetTrigger) {
                                 resetTrigger.focus();
@@ -140,7 +188,7 @@ const Tracker = {
                             return;
                         }
 
-                        // Create a mock click event for fallback logging
+                        // Record fallback click event
                         const mockClickEvent = {
                             type: 'MOUSE_PRESS_OR_RELEASE',
                             targetNodeId: 'virtual-fallback-node',
@@ -149,38 +197,16 @@ const Tracker = {
                         };
 
                         if (isTraditional) {
-                            focusClicksTraditional++;
+                            lastNativeClickTimeTraditional = now;
                             window.Store.experimental.traditionalClicks++;
-                            
                             let log = JSON.parse(window.Store.experimental.traditionalEventsLog);
                             log.push(mockClickEvent);
-                            
-                            // Fallback Screen Tracker: increment screen count on first click, and every 6 clicks thereafter
-                            if (focusClicksTraditional === 1 || focusClicksTraditional % 6 === 0) {
-                                window.Store.experimental.traditionalScreens++;
-                                log.push({
-                                    type: 'PRESENTED_NODE_CHANGED',
-                                    timestamp: new Date().toISOString(),
-                                    isFallback: true
-                                });
-                            }
                             window.Store.experimental.traditionalEventsLog = JSON.stringify(log);
                         } else {
-                            focusClicksAi++;
+                            lastNativeClickTimeAi = now;
                             window.Store.experimental.aiClicks++;
-                            
                             let log = JSON.parse(window.Store.experimental.aiEventsLog);
                             log.push(mockClickEvent);
-                            
-                            // Fallback Screen Tracker: increment screen count on first click, and every 6 clicks thereafter
-                            if (focusClicksAi === 1 || focusClicksAi % 6 === 0) {
-                                window.Store.experimental.aiScreens++;
-                                log.push({
-                                    type: 'PRESENTED_NODE_CHANGED',
-                                    timestamp: new Date().toISOString(),
-                                    isFallback: true
-                                });
-                            }
                             window.Store.experimental.aiEventsLog = JSON.stringify(log);
                         }
 
@@ -190,11 +216,11 @@ const Tracker = {
                             console.log('☝️ [Focus Click Fallback] Captured tap inside ' + (isTraditional ? 'Traditional' : 'AI') + ' iframe');
                         }
 
-                        // Refocus the parent page using the hidden input to capture the next tap
+                        // Refocus the parent page using the reset trigger element to capture subsequent iframe taps
                         const resetTrigger = document.getElementById('focus-reset-trigger');
                         if (resetTrigger) {
                             resetTrigger.focus();
-                            resetTrigger.blur(); // reset focus to body
+                            resetTrigger.blur();
                         }
                     }
                 }
