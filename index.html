@@ -32,6 +32,8 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col antialiased">
+    <!-- Hidden element for refocusing page after iframe interaction -->
+    <button id="focus-reset-trigger" style="position:absolute; opacity:0; pointer-events:none; width:0; height:0;" tabindex="-1"></button>
     
     <!-- Skip to main content for accessibility -->
     <a href="#app-root" class="skip-link">Skip to main content</a>
