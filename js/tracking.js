@@ -43,6 +43,19 @@ const Tracker = {
                 this.sendAbandonmentBeacon();
             }
         });
+
+        // Window blur: only schedule abandonment if the window lost focus to another app/tab, 
+        // NOT when the user clicks inside a prototype iframe!
+        window.addEventListener('blur', () => {
+            setTimeout(() => {
+                const activeEl = document.activeElement;
+                if (activeEl && activeEl.tagName === 'IFRAME') {
+                    // User is interacting with the prototype inside the app! Keep timer cleared.
+                    this.clearAbandonGraceTimer();
+                    return;
+                }
+            }, 100);
+        });
         // Flags and state trackers for Figma interaction tracking
         let lastNodeIdTraditional = null;
         let lastNodeIdAi = null;
